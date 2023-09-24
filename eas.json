@@ -1,0 +1,33 @@
+{
+  "cli": {
+    "version": ">= 0.60.0",
+    "promptToConfigurePushNotifications": false,
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "channel": "development",
+      "distribution": "internal"
+    },
+    "development-simulator": {
+      "developmentClient": true,
+      "channel": "development",
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      }
+    },
+    "prototype": {
+      "channel": "prototype",
+      "distribution": "internal"
+    },
+    "production": {
+      "channel": "production",
+      "autoIncrement": true
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
