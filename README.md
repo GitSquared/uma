@@ -30,7 +30,7 @@ All removed secrets have been replaced with the `[CENSORED]` tag to easily ident
 
 ## Monitoring
 
-The implementation contains leftovers of our monitoring and tracking solutions (UXCam, Sentry).
+The implementation contains leftovers of our monitoring and tracking solutions (UXCam, Sentry). The API keys related to those have been deleted from the source code, and the related accounts on the monitoring platforms have been closed.
 
 ## Licensing
 The untitled map app source code is shared under a Creative Commons [BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) license.
