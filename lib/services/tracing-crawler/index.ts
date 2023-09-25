@@ -1,6 +1,5 @@
 import ComputedFogShape from '@lib/entities/ComputedFogShape'
 import ComputedWalkTrace from '@lib/entities/ComputedWalkTrace'
-import * as Monitoring from '@lib/services/monitoring'
 import ThreadBridgeEventBus from '@lib/services/web-worker/thread-bridge'
 import dataSource from '@lib/utils/data-source'
 import * as turf from '@turf/turf'
@@ -36,31 +35,17 @@ export default async function crawlTrace(
 }> {
 	console.group('crawlTrace: start')
 	console.time('crawlTrace')
-	const crawlRunTransaction = Monitoring.startTransaction({
-		op: 'tracingCrawler.crawlLoop',
-		name: 'Tracing crawler crawl loop',
-	})
 
 	try {
 		// TARGET
 		console.time('crawlTrace: query')
-		const querySpan = crawlRunTransaction.startChild({
-			op: 'tracingCrawler.query',
-		})
-
 		const nextTraceState = await getNextTracingCrawlerState()
 
 		if (!nextTraceState) {
 			console.info('crawlTrace: no more points to trace')
-
 			console.timeEnd('crawlTrace: query')
 			console.timeEnd('crawlTrace')
 			console.groupEnd()
-			querySpan.setStatus(Monitoring.Status.Ok)
-			querySpan.finish()
-			crawlRunTransaction.setStatus(Monitoring.Status.Ok)
-			crawlRunTransaction.finish()
-
 			return { moreWorkAhead: false }
 		}
 
@@ -82,15 +67,9 @@ export default async function crawlTrace(
 		)
 
 		console.timeEnd('crawlTrace: query')
-		querySpan.setStatus(Monitoring.Status.Ok)
-		querySpan.finish()
-
 		// TRACE
 
 		console.time('crawlTrace: trace')
-		const traceSpan = crawlRunTransaction.startChild({
-			op: 'tracingCrawler.trace',
-		})
 
 		let fogShape: FogShapeGeometries
 		let walkTrace: WalkTraceGeometries
@@ -130,9 +109,6 @@ export default async function crawlTrace(
 			// EXPAND OR CREATE
 
 			console.time('crawlTrace: expand geometries')
-			const expandSpan = crawlRunTransaction.startChild({
-				op: 'tracingCrawler.expand',
-			})
 
 			fogShape = await workerThread.waitFor(
 				workerThread.submitJobRequest(ThreadedFnName.ExpandOrCreateFog, [
@@ -147,8 +123,6 @@ export default async function crawlTrace(
 			)
 
 			console.timeEnd('crawlTrace: expand geometries')
-			expandSpan.setStatus(Monitoring.Status.Ok)
-			expandSpan.finish()
 		}
 
 		const justDrawnPoint = latestUntracedPoint
@@ -189,16 +163,11 @@ export default async function crawlTrace(
 		}
 
 		console.timeEnd('crawlTrace: trace')
-		traceSpan.setStatus(Monitoring.Status.Ok)
-		traceSpan.finish()
 
 		// MERGE
 		// TODO: move from using tracing time to using geographical proximity to find geometries to merge
 
 		console.time('crawlTrace: merge geometries')
-		const mergeSpan = crawlRunTransaction.startChild({
-			op: 'tracingCrawler.merge',
-		})
 
 		let hasMergedFogShapes = false
 		let hasMergedWalkTraces = false
@@ -278,15 +247,10 @@ export default async function crawlTrace(
 		}
 
 		console.timeEnd('crawlTrace: merge geometries')
-		mergeSpan.setStatus(Monitoring.Status.Ok)
-		mergeSpan.finish()
 
 		// COMMIT
 
 		console.time('crawlTrace: write new state')
-		const commitSpan = crawlRunTransaction.startChild({
-			op: 'tracingCrawler.commit',
-		})
 
 		await dataSource
 			.transaction(async (entityManager) => {
@@ -303,17 +267,12 @@ export default async function crawlTrace(
 			})
 			.catch((error) => {
 				console.error('crawlTrace: error saving new state', error)
-				Monitoring.captureException(error)
 			})
 
 		console.timeEnd('crawlTrace: write new state')
-		commitSpan.setStatus(Monitoring.Status.Ok)
-		commitSpan.finish()
 
 		console.timeEnd('crawlTrace')
 		console.groupEnd()
-		crawlRunTransaction.setStatus(Monitoring.Status.Ok)
-		crawlRunTransaction.finish()
 
 		return {
 			moreWorkAhead: true,
@@ -321,8 +280,6 @@ export default async function crawlTrace(
 		}
 	} catch (error) {
 		console.error('crawlTrace: error', error)
-		crawlRunTransaction.setStatus(Monitoring.Status.InternalError)
-		Monitoring.captureException(error)
 	}
 
 	return {

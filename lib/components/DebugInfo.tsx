@@ -4,7 +4,6 @@ import Text from '@lib/components/generic/Text'
 import LocationPoint from '@lib/entities/LocationPoint'
 import dataSource from '@lib/utils/data-source'
 import Constants from 'expo-constants'
-import * as Updates from 'expo-updates'
 import { useEffect, useState } from 'react'
 import { StyleSheet } from 'react-native'
 
@@ -38,10 +37,6 @@ export default function DebugInfo() {
 					(Constants.expoConfig?.runtimeVersion as string | undefined) ??
 					'unknown'
 				}`}
-				{'\n'}
-				{`build ${Constants.expoConfig?.version ?? 'unknown'}-${(
-					Updates.createdAt ?? new Date()
-				).toISOString()}`}
 				{'\n'}
 				database: {dataSource.options.database}
 				{' / '}
