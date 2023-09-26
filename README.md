@@ -25,7 +25,7 @@ If you're curious, feel free to dig around!
 
 This is a basic managed expo app, and there are a few scripts in `package.json` that should help you find your way.
 
-You need to add some secrets by copying the `.env.example` to `.env` and adding you [mapbox access token](https://docs.mapbox.com/help/getting-started/access-tokens/).
+You need to provide your own secrets to access the map through [Mapbox](https://docs.mapbox.com/help/getting-started/access-tokens/) and provide support for other map services like snap-to-road path tracing. Copy the `.env.example` file to `.env` and set them up there.
 
 ## Licensing
 The untitled map app source code is shared under a Creative Commons [BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) license.
