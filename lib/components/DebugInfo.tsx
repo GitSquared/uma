@@ -38,6 +38,8 @@ export default function DebugInfo() {
 					'unknown'
 				}`}
 				{'\n'}
+				{`build ${Constants.expoConfig?.version ?? 'unknown'}`}
+				{'\n'}
 				database: {dataSource.options.database}
 				{' / '}
 				traced points: {locationPointsCount}
