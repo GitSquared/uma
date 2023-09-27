@@ -19,22 +19,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 		resizeMode: 'cover',
 		backgroundColor: '#FFFFFF',
 	},
-	updates: {
-		fallbackToCacheTimeout: 0,
-		url: '[CENSORED]',
-	},
-	hooks: {
-		postPublish: [
-			{
-				file: 'sentry-expo/upload-sourcemaps',
-				config: {
-					organization: 'reality-co-open-source',
-					project: 'uma',
-					setCommits: true,
-				},
-			},
-		],
-	},
 	plugins: [
 		[
 			'expo-build-properties',
@@ -42,13 +26,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 				ios: {
 					flipper: true,
 				},
-			},
-		],
-		'sentry-expo',
-		[
-			'expo-updates',
-			{
-				username: 'reality-co',
 			},
 		],
 		[
@@ -68,7 +45,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 			'@rnmapbox/maps',
 			{
 				RNMapboxMapsImpl: 'mapbox',
-				RNMapboxMapsDownloadToken: '[CENSORED]',
+				RNMapboxMapsDownloadToken: process.env.MAPBOX_ACCESS_TOKEN,
 			},
 		],
 	],
@@ -101,12 +78,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 		],
 	},
 	extra: {
-		eas: {
-			projectId: '[CENSORED]',
-		},
-		mapServicesApiUrl: '[CENSORED]',
-		mapboxAccessToken: '[CENSORED]',
-		uxCamAppKey: '[CENSORED]',
-		sentryDsn: '[CENSORED]',
+		mapServicesApiUrl: process.env.MAP_SERVICES_API_URL,
+		mapboxAccessToken: process.env.MAPBOX_ACCESS_TOKEN,
 	},
 })

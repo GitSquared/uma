@@ -5,11 +5,8 @@ import {
 	backgroundLocationService,
 	backgroundLocationTaskName,
 } from './background-location'
-import { setupMonitoring } from './monitoring'
 
 export function registerServices() {
-	setupMonitoring()
-
 	TaskManager.defineTask(backgroundLocationTaskName, backgroundLocationService)
 	setupAppWideEvents()
 }

@@ -3,7 +3,6 @@ import { InterTight_700Bold } from '@expo-google-fonts/inter-tight'
 import { Lexend_400Regular, Lexend_500Medium } from '@expo-google-fonts/lexend'
 import { safeBottomSheetViewScreenOptions } from '@lib/components/generic/SafeBottomSheetView'
 import BackgroundLocationServiceController from '@lib/services/BackgroundLocationServiceController'
-import { setupRoutingInstrumentation } from '@lib/services/monitoring'
 import TracingCrawlerServiceProvider from '@lib/services/tracing-crawler/TracingCrawlerServiceProvider'
 import WebWorkerThreadProvider from '@lib/services/web-worker/WebWorkerThreadProvider'
 import DatabaseProvider, {
@@ -11,11 +10,9 @@ import DatabaseProvider, {
 } from '@lib/utils/DatabaseProvider'
 import SettingsProvider from '@lib/utils/SettingsProvider'
 import * as Font from 'expo-font'
-import { SplashScreen, Stack, useRootNavigation } from 'expo-router'
+import { SplashScreen, Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
-import * as Updates from 'expo-updates'
 import { useEffect, useState } from 'react'
-import RNUxcam from 'react-native-ux-cam'
 
 SplashScreen.preventAutoHideAsync()
 
@@ -60,37 +57,6 @@ export default function RootLayout() {
 			SplashScreen.hideAsync()
 		}
 	}, [appIsReady])
-
-	Updates.useUpdateEvents((e) => {
-		console.debug('eas update event', e)
-	})
-	useEffect(() => {
-		console.log('Expo updates status', {
-			channel: Updates.channel,
-			runtime: Updates.runtimeVersion,
-		})
-	}, [])
-
-	const navigation = useRootNavigation()
-
-	useEffect(() => {
-		if (navigation) {
-			setupRoutingInstrumentation(navigation)
-		}
-
-		const onStateChange = () => {
-			const screenName = navigation?.getCurrentRoute()?.name
-			if (!screenName) return
-
-			RNUxcam.tagScreenName(screenName)
-		}
-
-		navigation?.addListener('state', onStateChange)
-
-		return () => {
-			navigation?.removeListener('state', onStateChange)
-		}
-	}, [navigation])
 
 	if (!appIsReady) {
 		return null
